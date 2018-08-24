@@ -1,0 +1,20 @@
+{
+  "client": {
+    "options": {
+      "url": <ldap-server-address>
+    }
+  },
+
+  "bind": {
+    "dn": <ldap-dn> // if $USER substring is found it's automatically replaced by the user
+  },
+
+  "search": {
+    "options": {
+      "filter": <ldap-filter-string>, // if $USER substring is found it's automatically replaced by the user
+      "scope": <ldap-search-scope>,
+      "attributes": <attributes-to-be-retrieved>
+    },
+    "dn": <ldap-dn>
+  }
+}

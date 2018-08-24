@@ -1,0 +1,34 @@
+{
+  "name": "ldap-id-server",
+  "version": "1.0.0",
+  "description": "Identification micro service wrapper for LDAP authentication",
+  "main": "index.js",
+  "scripts": {
+    "start": "micro",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/reinert/ldap-id-server.git"
+  },
+  "keywords": [
+    "ldap",
+    "id",
+    "server",
+    "identification",
+    "micro",
+    "service",
+    "authentication"
+  ],
+  "author": "Danilo Reinert",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/reinert/ldap-id-server/issues"
+  },
+  "homepage": "https://github.com/reinert/ldap-id-server#readme",
+  "dependencies": {
+    "ldapjs": "^1.0.2",
+    "micro": "^9.3.3",
+    "winston": "^3.0.0"
+  }
+}
