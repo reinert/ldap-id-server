@@ -7,8 +7,8 @@ module.exports = async (req, res) => {
     return send(res, 401, 'Missing Authorization header')
   }
 
-  const [ type, credentials ] = req.headers.authorization.split(' ')
-  if (type.toLowerCase() !== 'basic') {
+  const [ scheme, credentials ] = req.headers.authorization.split(' ')
+  if (scheme.toLowerCase() !== 'basic') {
     res.setHeader('WWW-Authenticate', 'Basic realm="User Visible Realm"')
     return send(res, 401, 'Only Basic authentication is supported')
   }

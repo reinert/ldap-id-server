@@ -76,6 +76,7 @@ async function authenticate(usr, pwd, cb) {
   let client = null
   try {
     client = await getClient(CONFIG.client.options)
+    LOGGER.info(`Client connected`)
   } catch (err) {
     LOGGER.error(`Failed to connect to LDAP server (see exceptions log for more details)`)
     process.emit('uncaughtException', err)
@@ -97,15 +98,11 @@ async function authenticate(usr, pwd, cb) {
       process.emit('uncaughtException', err)
 
       LOGGER.debug(`Unbinding from LDAP server...`)
-      client.unbind(unbindErr => {
-        if (unbindErr) {
-          LOGGER.error(`Failed to unbind (see exceptions log for more details)`)
-          process.emit('uncaughtException', unbindErr)
-        }
+      client.unbind()
+      client.destroy()
 
-        LOGGER.info(`Authentication ended unsuccessfully`)
-        cb(err)
-      })
+      LOGGER.info(`Authentication ended unsuccessfully`)
+      cb(err)
 
       return
     }
@@ -127,15 +124,11 @@ async function authenticate(usr, pwd, cb) {
         process.emit('uncaughtException', err)
 
         LOGGER.debug(`Unbinding from LDAP server...`)
-        client.unbind(unbindErr => {
-          if (unbindErr) {
-            LOGGER.error(`Failed to unbind (see exceptions log for more details)`)
-            process.emit('uncaughtException', unbindErr)
-          }
+        client.unbind()
+        client.destroy()
 
-          LOGGER.warn(`Authentication ended successfully but with no results for user '${usr}'`)
-          cb(undefined)
-        })
+        LOGGER.warn(`Authentication ended successfully but with no results for user '${usr}'`)
+        cb(undefined)
 
         return
       }
@@ -152,34 +145,26 @@ async function authenticate(usr, pwd, cb) {
         process.emit('uncaughtException', error)
 
         LOGGER.debug(`Unbinding from LDAP server...`)
-        client.unbind(unbindErr => {
-          if (unbindErr) {
-            LOGGER.error(`Failed to unbind (see exceptions log for more details)`)
-            process.emit('uncaughtException', unbindErr)
-          }
+        client.unbind()
+        client.destroy()
 
-          LOGGER.warn(`Authentication ended successfully but with no results for user '${usr}'`)
-          cb(undefined)
-        })
+        LOGGER.warn(`Authentication ended successfully but with no results for user '${usr}'`)
+        cb(undefined)
       })
 
       res.on('end', (result) => {
         LOGGER.debug(`Search returned result status ${result.status} for user '${usr}'`)
 
         LOGGER.debug(`Unbinding from LDAP server...`)
-        client.unbind(unbindErr => {
-          if (unbindErr) {
-            LOGGER.error(`Failed to unbind (see exceptions log for more details)`)
-            process.emit('uncaughtException', unbindErr)
-          }
+        client.unbind()
+        client.destroy()
 
-          if (payload) {
-            LOGGER.info(`Authentication ended successfully for user '${usr}'`)
-          } else {
-            LOGGER.warn(`Authentication ended successfully but with no results for user '${usr}'`)
-          }
-          cb(undefined, payload)
-        })
+        if (payload) {
+          LOGGER.info(`Authentication ended successfully for user '${usr}'`)
+        } else {
+          LOGGER.warn(`Authentication ended successfully but with no results for user '${usr}'`)
+        }
+        cb(undefined, payload)
       })
     })
   })
