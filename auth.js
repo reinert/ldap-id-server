@@ -8,6 +8,7 @@ const getClient = options => new Promise((resolve, reject) => {
   const client = ldap.createClient(options)
 
   const res = e => {
+    client.removeListener('connectRefused', reject)
     client.removeListener('connectError', reject)
     client.removeListener('setupError', reject)
     client.removeListener('end', reject)
@@ -18,6 +19,7 @@ const getClient = options => new Promise((resolve, reject) => {
   }
 
   client.once('connect', res)
+  client.once('connectRefused', reject)
   client.once('connectError', reject)
   client.once('setupError', reject)
   client.once('end', reject)
@@ -69,11 +71,11 @@ const getClient = options => new Promise((resolve, reject) => {
 // })
 
 async function authenticate(usr, pwd, cb) {
-  let payload = null
+  let client = undefined
+  let payload = undefined
 
   LOGGER.info(`Attempt to authenticate user '${usr}'`)
 
-  let client = null
   try {
     client = await getClient(CONFIG.client.options)
     LOGGER.info(`Client connected`)
@@ -92,7 +94,7 @@ async function authenticate(usr, pwd, cb) {
   const bindDn = CONFIG.bind.dn.replace('$USER', usr)
   LOGGER.silly(`Bind DN: "${bindDn}"`)
 
-  client.bind(bindDn, pwd, err => {
+  client.bind(bindDn, pwd || "non-empty-pwd", err => {
     if (err) {
       LOGGER.error(`Failed to authenticate user '${usr}' (see exceptions log for more details)`)
       process.emit('uncaughtException', err)
